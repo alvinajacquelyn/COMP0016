@@ -14,7 +14,7 @@ class Create_ModuleData():
             Instantiates MySQL Database Table <ModuleData>
         """
 
-        myConnection = pyodbc.connect('DRIVER=' + self.driver + ';SERVER=' + self.server + ';PORT=1433;DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
+        myConnection = pyodbc.connect('DRIVER=' + self.driver + ';SERVER=' + self.server + ';PORT=3306;DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
         cur = myConnection.cursor()
 
         create = """CREATE TABLE ModuleData(
@@ -25,8 +25,8 @@ class Create_ModuleData():
                         Faculty              VARCHAR(100),
                         Credit_Value         FLOAT,
                         Module_Lead          VARCHAR(100),
-                        Catalogue_Link       VARCHAR(MAX),
-                        Module_Description          VARCHAR(MAX),
+                        Catalogue_Link       TEXT(16383),
+                        Module_Description   TEXT(16383),
                         Last_Updated         DATETIME DEFAULT CURRENT_TIMESTAMP
                     );"""
 

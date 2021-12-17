@@ -14,7 +14,7 @@ class Reset_ModuleData():
             Deletes (if exists) MySQL Database Table <ModuleData>
         """
 
-        myConnection = pyodbc.connect('DRIVER=' + self.driver + ';SERVER=' + self.server +';PORT=1433;DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
+        myConnection = pyodbc.connect('DRIVER=' + self.driver + ';SERVER=' + self.server +';PORT=3306;DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
         cur = myConnection.cursor()
         cur.execute("DROP TABLE IF EXISTS ModuleData;")
         myConnection.commit()

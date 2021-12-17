@@ -12,7 +12,7 @@ from main.MONGODB_PUSHERS.mongodb_pusher import MongoDbPusher
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
-import pyLDAvis.gensim
+import pyLDAvis.gensim_models
 import matplotlib.colors as mcolors
 from sklearn.manifold import TSNE
 from bokeh.plotting import figure, output_file, save

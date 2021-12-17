@@ -8,7 +8,7 @@ from main.CONFIG_READER.read import get_details
 class UpdateStudentsPerModule():
     def __init__(self):
         # SERVER LOGIN DETAILS
-        self.server = get_details("SQL_SERVER", "server")
+        self.server = get_details("SQL_SERVER", "client")
         self.database = get_details("SQL_SERVER", "database")
         self.username = get_details("SQL_SERVER", "username")
         self.password = get_details("SQL_SERVER", "password")
@@ -17,7 +17,7 @@ class UpdateStudentsPerModule():
 
         # CONNECT TO DATABASE
         self.myConnection = pyodbc.connect('DRIVER=' + self.driver + ';SERVER=' + self.server +
-                                           ';PORT=1433;DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
+                                           ';PORT=3306;DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
 
     def __preProcess(self, text: str) -> Tuple[str, int, str]:
         """

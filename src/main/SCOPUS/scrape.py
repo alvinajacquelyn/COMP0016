@@ -18,7 +18,7 @@ class GetScopusData():
         self.client = pymongo.MongoClient(self.host)
         self.db = self.client.Scopus
         self.__rps_data_file = "main/SCOPUS/GIVEN_DATA_FILES/cleaned_RPS_export_2015.csv"
-        self.f = open("main/SCOPUS/log.txt", "a")
+        self.f = open("main/SCOPUS/log.txt", "a",  encoding="utf-8")
 
     def __progress(self, count: int, total: int, custom_text: str, suffix='') -> None:
         """

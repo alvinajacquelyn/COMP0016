@@ -8,7 +8,7 @@ from bson import json_util
 from main.LOADERS.publication_loader import PublicationLoader
 from main.CONFIG_READER.read import get_details
 
-client = pymongo.MongoClient(get_details("MONGO_DB", "client"))
+client = pymongo.MongoClient(get_details("MONGO_DB","client"))
 col = client.Scopus.PublicationPrediction
 
 class ScopusPrediction():
