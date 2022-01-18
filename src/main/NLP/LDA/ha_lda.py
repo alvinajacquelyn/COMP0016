@@ -71,7 +71,7 @@ class HaLda(Lda):
             json.dump(data, outfile)
 
         # # Push data to MongoDB and serialize as JSON file.
-        MongoDbPusher().healthyageing_prediction(data)    
+        MongoDbPusher().healthyageing_prediction(data) #add a file/function 
 
     def display_topic_words(self, num_top_words: int) -> None:
         """
