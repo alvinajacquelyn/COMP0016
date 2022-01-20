@@ -31,6 +31,18 @@ class MongoDbPusher():
         col.update_one(data, {"$set": value}, upsert=True)
         client.close()
 
+    def ha_prediction(self, data: dict) -> None:
+        """
+            Update HA model prediction cluster
+            MongoDB cluster - HAPrediction
+        """
+        client = pymongo.MongoClient(self.host, ssl_cert_reqs=ssl.CERT_NONE)
+        col = client.Scopus.HAPrediction
+        col.drop()
+        key = value = data
+        col.update_one(data, {"$set": value}, upsert=True)
+        client.close()
+
     def module_prediction(self, data) -> None:
         """
             Update Module model prediction cluster 

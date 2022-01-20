@@ -54,7 +54,14 @@ class Lda():
         db = client.Scopus
         col = db.Visualisations
 
-        title_end = "ihe" if choice == "ihe" else "sdg"
+        if choice == "ihe":
+            title_end= "ihe"
+        elif choice == "ha":
+            title_end = "ha"
+        else:
+            title_end= "sdg"
+
+        # title_end = "ihe" if choice == "ihe" else "sdg"
 
         data = {
             "PyLDA_"+title_end: pylda_html_contents,

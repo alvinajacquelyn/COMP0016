@@ -15,7 +15,7 @@ from main.MONGODB_PUSHERS.mongodb_pusher import MongoDbPusher
 class HaLda(Lda):
     """
         Concrete class for mapping  Scopus research publications to healthy aging keywords using Latent Dirichlet Allocation (LDA). 
-        The eta priors can be alterned to guide topic convergence given IHE-specific keywords.
+        The eta priors can be alterned to guide topic convergence given HA-specific keywords.
     """
 
     def __init__(self):
@@ -102,7 +102,7 @@ class HaLda(Lda):
         num_publications = 30000
         
         # HA-specific keywords.
-        keywords = "main/SDG_KEYWORDS/HA_Keywords.csv" #ask keywords from neel
+        keywords = "main/HA_KEYWORDS/HA_Keywords.csv" #ask keywords from neel
         passes = 10
         iterations = 400
         chunksize = 5000
@@ -124,7 +124,8 @@ class HaLda(Lda):
         
         print("Saving results...")
         self.write_results(corpus, num_top_words, results)
-        self.push_html_postgre("main/NLP/LDA/HA_RESULTS/pyldavis.html", "main/NLP/LDA/SDG_RESULTS/tsne_clusters.html", "sdg")
+        # change line below
+        self.push_html_postgre("main/NLP/LDA/HA_RESULTS/pyldavis.html", "main/NLP/LDA/HA_RESULTS/tsne_clusters.html", "sdg")
         self.serialize(model)
         
         print("Done.")
