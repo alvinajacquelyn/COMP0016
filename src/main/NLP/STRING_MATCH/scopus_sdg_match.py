@@ -10,7 +10,7 @@ from main.MONGODB_PUSHERS.mongodb_pusher import MongoDbPusher
 from main.NLP.PREPROCESSING.preprocessor import Preprocessor
 
 
-class ScopusStringMatch_HA():
+class ScopusStringMatch_SDG_Publications():
 
     def __init__(self):
         self.loader = PublicationLoader()
@@ -32,35 +32,35 @@ class ScopusStringMatch_HA():
     def __read_keywords(self, data: dict) -> None:
         """
             Given a set of publications in a dictionary, performs pre-processing for all string type data fields.
-            Performs look-up on HA keyword occurences in a document.
-            Results are pushed to MongoDB (backed-up in JSON file - scopus_ha_matches.json).
+            Performs look-up on SDG keyword occurences in a document.
+            Results are pushed to MongoDB (backed-up in JSON file - scopus_sdg_pub_matches.json).
         """
 
-        results_file_name = "main/NLP/STRING_MATCH/HA_RESULTS/scopus_ha_matches.json"
+        results_file_name = "main/NLP/STRING_MATCH/SDG_RESULTS/scopus_sdg_pub_matches.json"
 
         resulting_data = {}
         counter = 0
-        keywords = self.preprocessor.preprocess_keywords("main/HA_KEYWORDS/HA_Keywords.csv")
+        keywords = self.preprocessor.preprocess_keywords("main/SDG_KEYWORDS/SDG_Keywords.csv")
         num_publications, num_keywords = len(data), len(keywords)
     
         for doi, publication in data.items():
-            self.__progress(counter, num_publications,"processing scopus_ha_matches.json")
+            self.__progress(counter, num_publications,"processing scopus_sdg_pub_matches.json")
             
             # visualise the progress on a commandline
             description = ' '.join(self.preprocessor.tokenize(publication["Description"]))
-            ha_occurences = {}  # accumulator for SDG Keywords found in a given document
+            sdg_occurences = {}  # accumulator for SDG Keywords found in a given document
             for n in range(num_keywords):
-                ha_num = n + 1
+                sdg_num = n + 1
                 # clean and process the string for documenting occurences
-                ha = "HA " + str(ha_num)
-                ha_occurences[ha] = []
+                sdg = "SDG " + str(sdg_num)
+                sdg_occurences[sdg] = []
                 for keyword in keywords[n]:
                     if re.search(r'\b{0}\b'.format(keyword), description):
-                        ha_occurences[ha].append(keyword)
-                if len(ha_occurences[ha]) == 0:
-                    ha_occurences.pop(ha, None)  # clear out empty occurences
+                        sdg_occurences[sdg].append(keyword)
+                if len(sdg_occurences[sdg]) == 0:
+                    sdg_occurences.pop(sdg, None)  # clear out empty occurences
 
-                resulting_data[doi] = ha_occurences
+                resulting_data[doi] = sdg_occurences
 
             counter += 1
         print()

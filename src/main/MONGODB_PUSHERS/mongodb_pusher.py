@@ -30,6 +30,18 @@ class MongoDbPusher():
         key = value = data
         col.update_one(data, {"$set": value}, upsert=True)
         client.close()
+    
+    def sdg_prediction(self, data:dict) -> None:
+        """
+            Update SDG model prediction cluster
+            MongoDB cluster - SDGPrediction
+        """
+        client = pymongo.MongoClient(self.host, ssl_cert_reqs=ssl.CERT_NONE)
+        col = client.Scopus.SDGPrediction
+        col.drop()
+        key = value = data
+        col.update_one(data, {"$set": value}, upsert=True)
+        client.close()        
 
     def ha_prediction(self, data: dict) -> None:
         """

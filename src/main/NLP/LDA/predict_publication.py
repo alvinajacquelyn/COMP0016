@@ -16,6 +16,7 @@ class ScopusPrediction():
     def __init__(self):
         self.publiction_data = pd.DataFrame(columns=['DOI', 'Title', 'Description'])
         self.model_name_SDG = "main/NLP/LDA/SDG_RESULTS/model.pkl"
+        self.model_name_SDG_pub = "main/NLP/LDA/SDG_PUB_RESULTS/model.pkl"
         self.model_name_IHE = "main/NLP/LDA/IHE_RESULTS/model.pkl"
         self.model_name_HA = "main/NLP/LDA/HA_RESULTS/model.pkl"
         self.model_name_HA_modules = "main/NLP/LDA/HA_MODULE_RESULTS/model.pkl"
@@ -85,6 +86,64 @@ class ScopusPrediction():
                 contents[str(val[i][0])] = val[i][1]
             data[key] = contents
         return data
+
+    def __writeToDB_Scopus_SDG_Pub(self, data: dict, existing: dict) -> None:
+        """
+            Writes to MongoDB's SDGModPRediction cluster
+        """
+        col_sdg_pred = client.Scopus.SDGModPrediction
+
+        c, l = 1, len(data)
+        for i, val in data.items():
+            self.__progress(c, l, "Pushing to Mongo SDG Predictions")
+            if i not in existing:
+                col_sdg_pred.update_one({"DOI": i}, {"$set": val}, upsert=True)
+            c += 1
+        print()
+
+    def make_predictions_SDG_Pub(self) -> None:
+        """
+            Uses LDA trained on 30,000 publications to classify the rest of the publications in accordance with SDG's
+        """
+        papers = self.loader.load_all()
+
+        with open("main/NLP/LDA/SDG_PUB_RESULTS/training_results_all.json") as f:
+            existing_papers = json.load(f)['Document Topics']
+        existing_papers = self.__clean_training_results(existing_papers)
+
+        resultser = {}
+        num_papers, counter = len(papers), 1
+
+        with open(self.model_name_SDG_pub, 'rb') as f:
+            lda = pickle.load(f)
+            for i in papers:
+                self.__progress(counter, num_papers, "Predicting SDG for unseen publications...")
+                description = papers[i]['Description']
+
+
+                X_predicted = lda.vectorizer.transform([description])
+                C_predicted = gensim.matutils.Sparse2Corpus(X_predicted, documents_columns=False)
+                topic_distribution = lda.model.get_document_topics(C_predicted)
+
+                td = [x for x in topic_distribution]
+                td = td[0]
+
+                multiplier = 10 ** 1
+
+                data = {}
+                for index, topic in enumerate(td):
+                    td[index] = (topic[0], int((topic[1] * 100) * multiplier) / multiplier)
+                    data[str(td[index][0])] = td[index][1]
+
+                existing_papers[i] = data
+                counter += 1
+
+        print()
+        with open("main/NLP/LDA/SDG_PUB_RESULTS/scopus_prediction_results.json", "w") as f:
+            json.dump(existing_papers, f)
+
+        self.__writeToDB_Scopus_SDG_Pub(existing_papers, {})
+        client.close()
 
     def __writeToDB_Scopus_IHE(self, data: dict, existing: dict) -> None:
         """
@@ -275,6 +334,7 @@ class ScopusPrediction():
         """
         
         self.make_predictions_SDG(limit=None)
+        self.make_predictions_SDG_Pub()
         self.make_predictions_IHE()
         self.make_predictions_HA()
         self.make_predictions_HA_modules(limit=None)

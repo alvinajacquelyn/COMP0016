@@ -125,7 +125,7 @@ class HaLda(Lda):
         print("Saving results...")
         self.write_results(corpus, num_top_words, results)
         # change line below
-        self.push_html_postgre("main/NLP/LDA/HA_RESULTS/pyldavis.html", "main/NLP/LDA/HA_RESULTS/tsne_clusters.html", "sdg")
+        self.push_html_postgre("main/NLP/LDA/HA_RESULTS/pyldavis.html", "main/NLP/LDA/HA_RESULTS/tsne_clusters.html", "ha")
         self.serialize(model)
         
         print("Done.")

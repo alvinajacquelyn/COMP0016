@@ -1,4 +1,4 @@
-from main.NLP.LDA.sdg_lda import SdgLda
+=from main.NLP.LDA.sdg_lda import SdgLda
 from main.NLP.LDA.ihe_lda import IheLda
 
 from main.NLP.STRING_MATCH.module_match import ModuleStringMatch
@@ -6,6 +6,12 @@ from main.NLP.STRING_MATCH.scopus_match import ScopusStringMatch_SDG
 from main.NLP.STRING_MATCH.scopus_ihe_match import ScopusStringMatch_IHE
 
 from main.NLP.LDA.predict_publication import ScopusPrediction
+from main.NLP.SVM.ha_svm import HaSvm
+from main.NLP.SVM.ha_svm_dataset import HaSvmDataset
+from main.NLP.SVM.ha_svm_module import HaModuleSvm
+from main.NLP.SVM.ha_svm_module_dataset import HASvmModuleDataset
+from main.NLP.SVM.sdg_svm_pub import SdgPubSvm
+from main.NLP.SVM.sdg_svm_pub_dataset import SdgSvmPubDataset
 from main.NLP.VALIDATION.validate_sdg_svm import ValidateSdgSvm
 
 from main.NLP.SVM.sdg_svm_dataset import SdgSvmDataset
@@ -58,26 +64,35 @@ class NLP_SECTION():
         """
         ValidateSdgSvm().run()
 
-    def create_SDG_SVM_dataset(self, modules: bool, publications: bool) -> None:
+    def create_SDG_SVM_dataset(self, modules: bool, publications: bool) -> None: #should we put all the modules training together so they run together?
         """
             Creates the dataset needed to run SDG validation on Svm model predictions
         """
         SdgSvmDataset().run(modules, publications)
+        HASvmModuleDataset().run(modules,publications)
 
-    def run_SVM_SDG(self) -> None:
+    def run_SVM_SDG(self) -> None: #should we put all the modules training together so they run together?
         """
             Runs SVM model training for Modules & Publications SDG classification
         """
         SdgSvm().run()
+        HaModuleSvm().run()
 
-    def create_IHE_SVM_dataset(self) -> None:
+    def create_IHE_SVM_dataset(self) -> None: #should we put all the publications training together so they run together?
         """
             Runs SVM model training for Modules & Publications SDG classification
         """
         IheSvmDataset().run()
+        SdgSvmPubDataset().run()
+        HaSvmDataset().run()
 
-    def run_SVM_IHE(self) -> None:
+    def run_SVM_IHE(self) -> None: #should we put all the publications training together so they run together?
         """
             Runs SVM model training for Modules & Publications SDG classification
         """
         IheSvm().run()
+        SdgPubSvm().run()
+        HaSvm.run()
+
+
+
