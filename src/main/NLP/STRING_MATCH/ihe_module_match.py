@@ -9,7 +9,7 @@ from main.LOADERS.module_loader import ModuleLoader
 from main.MONGODB_PUSHERS.mongodb_pusher import MongoDbPusher
 from main.NLP.PREPROCESSING.module_preprocessor import ModuleCataloguePreprocessor
 
-class ModuleStringMatchHA():
+class ModuleStringMatchIHE():
     def __init__(self):
         self.loader = ModuleLoader()
         self.mongodb_pusher = MongoDbPusher()
@@ -30,13 +30,13 @@ class ModuleStringMatchHA():
     def __read_keywords(self, data: pd.DataFrame) -> None:
         """
             Given a set of module data in a Pandas DataFrame (columns=[Module_Name, Module_ID, Description]), performs pre-processing for all string type data fields.
-            Performs look-up on HA keyword occurences in a document.
+            Performs look-up on ihe keyword occurences in a document.
             Results are pushed to MongoDB (backed-up in JSON file - scopus_matches.json).
         """
     
         resulting_data = {}
         counter = 0
-        keywords = self.preprocessor.preprocess_keywords("main/HA_KEYWORDS/HA_Keywords.csv")
+        keywords = self.preprocessor.preprocess_keywords("main/IHE_KEYWORDS/stringmatch_specialities_3.csv")
         stopwords = self.preprocessor.stopwords
         num_modules = len(data)
         num_keywords = len(keywords)
@@ -55,24 +55,24 @@ class ModuleStringMatchHA():
             module_text = module_name + " " + module_description
             module_text = " ".join(self.preprocessor.tokenize(module_text)) # preprocess module text.
 
-            ha_occurences = {}
+            ihe_occurences = {}
             for n in range(num_keywords):
-                ha_num = n + 1
-                ha = "HA " + str(ha_num) if ha_num < num_keywords else "Misc" # clean and process the string for documenting occurences
-                ha_occurences[ha] = {"Word_Found": []}
+                ihe_num = n + 1
+                ihe = "IHE " + str(ihe_num) if ihe_num < num_keywords else "Misc" # clean and process the string for documenting occurences
+                ihe_occurences[ihe] = {"Word_Found": []}
                 for keyword in keywords[n]:
                     if keyword in module_text and keyword not in stopwords:
-                        ha_occurences[ha]["Word_Found"].append(keyword)
+                        ihe_occurences[ihe]["Word_Found"].append(keyword)
                 
-                if len(ha_occurences[ha]["Word_Found"]) == 0:
-                    del ha_occurences[ha]  # clear out empty occurences
+                if len(ihe_occurences[ihe]["Word_Found"]) == 0:
+                    del ihe_occurences[ihe]  # clear out empty occurences
                 
-                resulting_data[data["Module_ID"][i]] = {"Module_Name": data["Module_Name"][i], "Related_HA": ha_occurences}
+                resulting_data[data["Module_ID"][i]] = {"Module_Name": data["Module_Name"][i], "Related_IHE": ihe_occurences}
         
         self.mongodb_pusher.matched_modules(resulting_data) # push the processed data to MongoDB
         print()
         # Record the same data locally, acts as a backup
-        with open('main/NLP/STRING_MATCH/HA_RESULTS/module_matches.json', 'w') as outfile:
+        with open('main/NLP/STRING_MATCH/IHE_RESULTS/module_matches.json', 'w') as outfile:
             json.dump(resulting_data, outfile)
     
     def run(self) -> None:

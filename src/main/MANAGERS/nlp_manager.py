@@ -1,4 +1,4 @@
-=from main.NLP.LDA.sdg_lda import SdgLda
+from main.NLP.LDA.sdg_lda import SdgLda
 from main.NLP.LDA.ihe_lda import IheLda
 
 from main.NLP.STRING_MATCH.module_match import ModuleStringMatch
@@ -10,6 +10,8 @@ from main.NLP.SVM.ha_svm import HaSvm
 from main.NLP.SVM.ha_svm_dataset import HaSvmDataset
 from main.NLP.SVM.ha_svm_module import HaModuleSvm
 from main.NLP.SVM.ha_svm_module_dataset import HASvmModuleDataset
+from main.NLP.SVM.ihe_svm_module_dataset import IHESvmModuleDataset
+from main.NLP.SVM.ihe_svm_module import IheModuleSvm
 from main.NLP.SVM.sdg_svm_pub import SdgPubSvm
 from main.NLP.SVM.sdg_svm_pub_dataset import SdgSvmPubDataset
 from main.NLP.VALIDATION.validate_sdg_svm import ValidateSdgSvm
@@ -70,6 +72,7 @@ class NLP_SECTION():
         """
         SdgSvmDataset().run(modules, publications)
         HASvmModuleDataset().run(modules,publications)
+        IHESvmModuleDataset.run(modules, publications)
 
     def run_SVM_SDG(self) -> None: #should we put all the modules training together so they run together?
         """
@@ -77,6 +80,7 @@ class NLP_SECTION():
         """
         SdgSvm().run()
         HaModuleSvm().run()
+        IheModuleSvm().run()
 
     def create_IHE_SVM_dataset(self) -> None: #should we put all the publications training together so they run together?
         """
@@ -85,6 +89,8 @@ class NLP_SECTION():
         IheSvmDataset().run()
         SdgSvmPubDataset().run()
         HaSvmDataset().run()
+    
+    
 
     def run_SVM_IHE(self) -> None: #should we put all the publications training together so they run together?
         """

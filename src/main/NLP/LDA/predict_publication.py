@@ -299,6 +299,42 @@ class ScopusPrediction():
             json.dump(results, f)
         client.close()
 
+    def make_predictions_IHE_modules(self, limit) -> None:
+        """
+            Uses LDA trained on modules to classify publications in accordance with IHE's
+        """
+        self.load_publications()
+
+        results = {}
+        papers = self.publiction_data.head(limit) if limit else self.publiction_data
+        num_papers, counter = len(papers), 1
+
+        with open(self.model_name_IHE, 'rb') as f:
+            lda = pickle.load(f)
+            for i in range(num_papers):
+                self.__progress(counter, num_papers, "Predicting...")
+                description = papers['Description'][i]
+
+                X_predicted = lda.vectorizer.transform([description])
+                C_predicted = gensim.matutils.Sparse2Corpus(X_predicted, documents_columns=False)
+                topic_distribution = lda.model.get_document_topics(C_predicted)
+
+                td = [x for x in topic_distribution]
+                td = td[0]
+                results[papers['DOI'][i]] = {}
+                for topic, pr in td:
+                    results[papers['DOI'][i]]['Title'] = papers['Title'][i]
+                    results[papers['DOI'][i]]['DOI'] = papers['DOI'][i]
+                    results[papers['DOI'][i]][str(topic + 1)] = str(pr)
+                
+                self.__writeToDB_Scopus(results[papers['DOI'][i]])
+                counter += 1
+
+        print()
+        with open("main/NLP/LDA/IHE_MODULE_RESULTS/scopus_prediction_results.json", "w") as f:
+            json.dump(results, f)
+        client.close()
+
     def load_publications(self) -> None:
         """
             Forms self.publiction_data (publication dataset)
@@ -336,5 +372,6 @@ class ScopusPrediction():
         self.make_predictions_SDG(limit=None)
         self.make_predictions_SDG_Pub()
         self.make_predictions_IHE()
+        self.make_predictions_IHE_modules(limit= None)
         self.make_predictions_HA()
         self.make_predictions_HA_modules(limit=None)
