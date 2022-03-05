@@ -56,15 +56,9 @@ class Lda():
 
         if choice == "ihe":
             title_end= "ihe"
-        elif choice == "ihemod":
-            title_end = "ihemod"
+
         elif choice == "ha":
             title_end = "ha"
-        elif choice == "hamod":
-            title_end = "hamod"
-        elif choice == "sdgpub":
-            title_end = "sdgpub"
-
         else:
             title_end= "sdg"
 

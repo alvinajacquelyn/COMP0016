@@ -5,13 +5,13 @@ import datetime
 import pandas as pd
 import pymongo
 
-from main.LOADERS.module_loader import ModuleLoader
+from main.LOADERS.module_loader_ha import ModuleLoaderHA
 from main.MONGODB_PUSHERS.mongodb_pusher import MongoDbPusher
 from main.NLP.PREPROCESSING.module_preprocessor import ModuleCataloguePreprocessor
 
-class ModuleStringMatchHA():
+class ModuleStringMatch():
     def __init__(self):
-        self.loader = ModuleLoader()
+        self.loader = ModuleLoaderHA()
         self.mongodb_pusher = MongoDbPusher()
         self.preprocessor = ModuleCataloguePreprocessor()
 
@@ -30,7 +30,7 @@ class ModuleStringMatchHA():
     def __read_keywords(self, data: pd.DataFrame) -> None:
         """
             Given a set of module data in a Pandas DataFrame (columns=[Module_Name, Module_ID, Description]), performs pre-processing for all string type data fields.
-            Performs look-up on HA keyword occurences in a document.
+            Performs look-up on SDG keyword occurences in a document.
             Results are pushed to MongoDB (backed-up in JSON file - scopus_matches.json).
         """
     
@@ -69,7 +69,7 @@ class ModuleStringMatchHA():
                 
                 resulting_data[data["Module_ID"][i]] = {"Module_Name": data["Module_Name"][i], "Related_HA": ha_occurences}
         
-        self.mongodb_pusher.matched_modules(resulting_data) # push the processed data to MongoDB
+        self.mongodb_pusher.matched_ha_modules(resulting_data) # push the processed data to MongoDB
         print()
         # Record the same data locally, acts as a backup
         with open('main/NLP/STRING_MATCH/HA_RESULTS/module_matches.json', 'w') as outfile:

@@ -30,26 +30,15 @@ class MongoDbPusher():
         key = value = data
         col.update_one(data, {"$set": value}, upsert=True)
         client.close()
-    
-    def sdg_prediction(self, data:dict) -> None:
-        """
-            Update SDG model prediction cluster
-            MongoDB cluster - SDGPrediction
-        """
-        client = pymongo.MongoClient(self.host, ssl_cert_reqs=ssl.CERT_NONE)
-        col = client.Scopus.SDGPrediction
-        col.drop()
-        key = value = data
-        col.update_one(data, {"$set": value}, upsert=True)
-        client.close()        
+         
 
-    def ha_prediction(self, data: dict) -> None:
+    def ha_module_prediction(self, data: dict) -> None:
         """
             Update HA model prediction cluster
             MongoDB cluster - HAPrediction
         """
         client = pymongo.MongoClient(self.host, ssl_cert_reqs=ssl.CERT_NONE)
-        col = client.Scopus.HAPrediction
+        col = client.Scopus.HAModulePrediction
         col.drop()
         key = value = data
         col.update_one(data, {"$set": value}, upsert=True)
@@ -84,6 +73,24 @@ class MongoDbPusher():
             counter += 1
         client.close()
 
+
+    def matched_ha_modules(self, data: dict) -> None:
+        """
+            Update module string matching cluster
+            MongoDB cluster - MatchedModules
+        """
+        client = pymongo.MongoClient(self.host, ssl_cert_reqs=ssl.CERT_NONE)
+        col = client.Scopus.MatchedHAModules
+        col.drop()
+        data_len = len(data)
+        counter = 1
+        for key in data:
+            self.progress(counter, data_len, "Uploading MatchedModules to MongoDB")
+            value = data[key]
+            col.update_one({"Module_ID": key}, {"$set": value}, upsert=True)
+            counter += 1
+        client.close()
+
     def matched_scopus(self, data: dict) -> None:
         """
             Update publication string matching cluster
@@ -101,6 +108,25 @@ class MongoDbPusher():
             col.update_one({"DOI": key}, {"$set": value}, upsert=True)
             counter += 1
         client.close()
+
+    def matched_ha_scopus(self, data: dict) -> None:
+        """
+            Update publication string matching cluster
+            MongoDB cluster - 
+        """
+        client = pymongo.MongoClient(self.host, ssl_cert_reqs=ssl.CERT_NONE)
+        col = client.Scopus.MatchedHAScopus
+        col.drop()
+        data_len = len(data)
+        counter = 1
+        for i in data:
+            self.progress(counter, data_len, "Uploading MatchedScopus to MongoDB")
+            key = data[i]["DOI"]
+            value = data[i]
+            col.update_one({"DOI": key}, {"$set": value}, upsert=True)
+            counter += 1
+        client.close()
+
 
     def module_validation(self, data) -> None:
         """
@@ -131,6 +157,17 @@ class MongoDbPusher():
         """
         client = pymongo.MongoClient(self.host, ssl_cert_reqs=ssl.CERT_NONE)
         col = client.Scopus.SvmSdgPredictions
+        key = value = data
+        col.update(key, value, upsert=True)
+        client.close()
+
+    def svm_ha_predictions(self, data) -> None:
+        """
+            Update SDG predictions using SVM on modules and publications. 
+            MongoDB cluster - SvmSdgPredictions
+        """
+        client = pymongo.MongoClient(self.host, ssl_cert_reqs=ssl.CERT_NONE)
+        col = client.Scopus.SvmHaPredictions
         key = value = data
         col.update(key, value, upsert=True)
         client.close()
