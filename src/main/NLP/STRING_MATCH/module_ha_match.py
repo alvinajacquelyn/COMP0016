@@ -9,7 +9,7 @@ from main.LOADERS.module_loader_ha import ModuleLoaderHA
 from main.MONGODB_PUSHERS.mongodb_pusher import MongoDbPusher
 from main.NLP.PREPROCESSING.module_preprocessor import ModuleCataloguePreprocessor
 
-class ModuleStringMatch():
+class ModuleStringMatchHA():
     def __init__(self):
         self.loader = ModuleLoaderHA()
         self.mongodb_pusher = MongoDbPusher()

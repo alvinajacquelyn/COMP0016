@@ -7,7 +7,7 @@ from main.LOADERS.publication_loader_ha import PublicationLoaderHA
 from main.MONGODB_PUSHERS.mongodb_pusher import MongoDbPusher
 from main.NLP.PREPROCESSING.preprocessor import Preprocessor
 
-class ScopusStringMatch():
+class ScopusStringMatch_HA():
     
     def __init__(self):
         self.loader = PublicationLoaderHA()

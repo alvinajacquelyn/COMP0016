@@ -6,35 +6,35 @@ import pymongo
 import enum
 from bson import json_util
 
-from main.LOADERS.loader import Loader
-from main.LOADERS.module_loader import ModuleLoader
-from main.LOADERS.publication_loader import PublicationLoader
+from main.LOADERS.loaderha import LoaderHA
+from main.LOADERS.module_loader_ha import ModuleLoaderHA
+from main.LOADERS.publication_loader_ha import PublicationLoaderHA
 from main.MONGODB_PUSHERS.mongodb_pusher import MongoDbPusher
 
 class Dataset(enum.Enum):
     MODULE = 1
     PUBLICATION = 2
 
-class ValidateHaSvm():
+class ValidateHASvm():
     """
-        Performs SVM model validation for HAs.
+        Performs SVM model validation for SDGs.
     """
 
     def __init__(self):
         """
-            Initializes total number of HAs, loader and MongoDB pusher.
+            Initializes total number of SDGs, loader and MongoDB pusher.
         """
         self.num_has = 19
-        self.loader = Loader()
+        self.loader = LoaderHA()
         self.mongodb_pusher = MongoDbPusher()
 
     def module_string_matches_results(self) -> dict:
         """
             Loads string matching keyword counts for modules and stores the results as a dictionary.
         """
-        data = ModuleLoader().load_string_matches_results()
+        data = ModuleLoaderHA().load_string_matches_results()
         data = json.loads(json_util.dumps(data)) # process mongodb response to a workable dictionary format.
-        results = {}  # dictionary with Module_ID and HA keyword counts.
+        results = {}  # dictionary with Module_ID and SDG keyword counts.
         
         for module_id, module in data.items():
             ha_dict = module['Related_HA']
@@ -46,7 +46,7 @@ class ValidateHaSvm():
                 count = len(word_found_dict['Word_Found'])
                 counts[ha_num - 1] = count
             
-            results[module_id] = counts # add Module_ID with array of HA keyword counts to results.
+            results[module_id] = counts # add Module_ID with array of SDG keyword counts to results.
 
         return results
 
@@ -54,9 +54,9 @@ class ValidateHaSvm():
         """
             Loads string matching keyword counts for scopus publications and stores the results as a dictionary.
         """
-        data = PublicationLoader().load_string_matches_results()
+        data = PublicationLoaderHA().load_string_matches_results()
         data = json.loads(json_util.dumps(data)) # process mongodb response to a workable dictionary format.
-        results = {} # dictionary with DOI and HA keyword counts.
+        results = {} # dictionary with DOI and SDG keyword counts.
 
         for doi in data:
             ha_dict = data[doi]['Related_HA']
@@ -68,7 +68,7 @@ class ValidateHaSvm():
                 count = len(word_found_dict['Word_Found'])
                 counts[ha_num - 1] = count
             
-            results[doi] = counts # add DOI with array of HA keyword counts to results.
+            results[doi] = counts # add DOI with array of SDG keyword counts to results.
 
         return results
 
@@ -99,7 +99,7 @@ class ValidateHaSvm():
         results = {}
 
         for key in model_data:
-            vec_A = np.array(model_data[key]) # probability distribution of SVM model for HAs.
+            vec_A = np.array(model_data[key]) # probability distribution of SVM model for SDGs.
             original_counts = count_data[key]
             counts = original_counts.copy()
             
@@ -107,9 +107,9 @@ class ValidateHaSvm():
                 if counts[i] == 0:
                     counts[i] = e
             counts_sum_inv = 1.0 / sum(counts)
-            vec_B = np.array(counts) * counts_sum_inv # probability predicted by counting keyword occurances for each HA.
+            vec_B = np.array(counts) * counts_sum_inv # probability predicted by counting keyword occurances for each SDG.
 
-            # Populate validation dictionary with Module_ID, Similarity and HA keyword counts.
+            # Populate validation dictionary with Module_ID, Similarity and SDG keyword counts.
             validation_dict = {}
             validation_dict["Similarity"] = self.compute_similarity(vec_A, vec_B)
             validation_dict["HA_Keyword_Counts"] = original_counts
