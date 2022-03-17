@@ -67,7 +67,7 @@ class ModuleLoader(Loader):
                 data = json.load(json_file)
         else:
             client = pymongo.MongoClient(self.host, ssl_cert_reqs=ssl.CERT_NONE)
-            col = client.Scopus.HAModulePrediction
+            col = client.Scopus.ModulePrediction
             data = col.find()
             data = json.loads(json_util.dumps(data)) # process mongodb response to a workable dictionary format.
             client.close()

@@ -67,7 +67,7 @@ class ModuleLoaderHA(LoaderHA):
                 data = json.load(json_file)
         else:
             client = pymongo.MongoClient(self.host, ssl_cert_reqs=ssl.CERT_NONE)
-            col = client.Scopus.MatchedHAModules
+            col = client.Scopus.HAModulePrediction
             data = col.find()
             data = json.loads(json_util.dumps(data)) # process mongodb response to a workable dictionary format.
             client.close()
@@ -83,7 +83,7 @@ class ModuleLoaderHA(LoaderHA):
                 data = json.load(json_file)
         else:
             client = pymongo.MongoClient(self.host, ssl_cert_reqs=ssl.CERT_NONE)
-            col = client.Scopus.MatchedModules
+            col = client.Scopus.MatchedHAModules
             data = col.find(batch_size=10)
             client.close()
 
